@@ -8,6 +8,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { ZoneRisk } from "../types";
+import { getRiskColorHex as getRiskColorHexImported } from "../utils/riskUtils";
 
 interface StadiumMapProps {
   zones: ZoneRisk[];
@@ -51,24 +52,7 @@ export default function StadiumMap({
   };
 
   const getRiskColorHex = (level: string, active: boolean) => {
-    if (isHighContrast) {
-      switch (level) {
-        case "high":
-          return "#eab308"; // High Contrast Yellow
-        case "medium":
-          return "#60a5fa"; // High Contrast Blue
-        default:
-          return active ? "#ffffff" : "#a3a3a3";
-      }
-    }
-    switch (level) {
-      case "high":
-        return active ? "#f43f5e" : "#fda4af"; // Rose-500 / Rose-300
-      case "medium":
-        return active ? "#f59e0b" : "#fcd34d"; // Amber-500 / Amber-300
-      default:
-        return active ? "#10b981" : "#6ee7b7"; // Emerald-500 / Emerald-300
-    }
+    return getRiskColorHexImported(level, isHighContrast, active);
   };
 
   const activeZone = zones.find(

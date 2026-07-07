@@ -20,6 +20,9 @@ import {
 import { ZoneRisk, Incident, UserProfile } from "../types";
 import StadiumMap from "./StadiumMap";
 import Sparkline from "./Sparkline";
+import ScenarioSimulator from "./ScenarioSimulator";
+import StaffVolunteerDispatch from "./StaffVolunteerDispatch";
+import { getRiskColorClasses } from "../utils/riskUtils";
 
 interface OperatorDashboardProps {
   isHighContrast: boolean;
@@ -271,24 +274,7 @@ export default function OperatorDashboard({
 
   // Custom colors based on risk
   const getRiskColor = (level: string) => {
-    if (isHighContrast) {
-      switch (level) {
-        case "high":
-          return "bg-black text-yellow-400 border-4 border-yellow-400 font-bold";
-        case "medium":
-          return "bg-black text-blue-400 border-4 border-blue-400 font-bold";
-        default:
-          return "bg-black text-white border-4 border-white font-bold";
-      }
-    }
-    switch (level) {
-      case "high":
-        return "bg-rose-100 text-rose-800 border border-rose-300";
-      case "medium":
-        return "bg-amber-100 text-amber-800 border border-amber-300";
-      default:
-        return "bg-emerald-100 text-emerald-800 border border-emerald-300";
-    }
+    return getRiskColorClasses(level, isHighContrast);
   };
 
   return (
@@ -371,127 +357,11 @@ export default function OperatorDashboard({
       </div>
 
       {/* 1.5. Interactive Operational Simulator Panel (Special Judge Feature) */}
-      <div
-        className={`p-5 rounded-2xl border transition-all ${
-          isHighContrast
-            ? "bg-black border-4 border-white text-white"
-            : "bg-gradient-to-r from-teal-50/50 to-neutral-50/50 border-neutral-200/80 shadow-xs"
-        }`}
-        id="interactive-simulator-panel"
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-200/60 pb-3 mb-4">
-          <div>
-            <h4 className="font-display font-bold text-xs uppercase tracking-wider text-neutral-900 flex items-center gap-2">
-              <span className="p-1 bg-teal-100 text-teal-700 rounded-md shrink-0">
-                ⚡
-              </span>
-              FIFA World Cup 2026 Telemetry Scenario Simulator
-            </h4>
-            <p className="text-[11px] text-neutral-500">
-              For evaluation: Inject real-time crowd dynamics, crises, or
-              weather alerts to verify immediate AI and rule-engine adaptation.
-            </p>
-          </div>
-          <div className="shrink-0">
-            <span
-              className={`text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider border flex items-center gap-1.5 ${
-                currentScenario === "normal"
-                  ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                  : currentScenario === "crowd_rush"
-                    ? "bg-amber-50 text-amber-800 border-amber-200 animate-pulse"
-                    : currentScenario === "gate_b_emergency"
-                      ? "bg-rose-50 text-rose-800 border-rose-200 animate-pulse"
-                      : currentScenario === "extreme_rain"
-                        ? "bg-blue-50 text-blue-800 border-blue-200"
-                        : "bg-purple-50 text-purple-800 border-purple-200 animate-pulse"
-              }`}
-            >
-              <span className="h-2 w-2 rounded-full bg-current" />
-              Scenario: {currentScenario.replace(/_/g, " ")}
-            </span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          <button
-            onClick={() => handleSetScenario("normal")}
-            className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between h-22 ${
-              currentScenario === "normal"
-                ? "bg-white border-emerald-500 ring-2 ring-emerald-500/20 text-neutral-900 shadow-xs font-bold"
-                : "bg-white border-neutral-200 hover:border-teal-500/50 text-neutral-700"
-            }`}
-          >
-            <span className="text-xs font-bold block">🏟️ Base Load</span>
-            <span className="text-[10px] text-neutral-400 block leading-tight mt-1 font-normal">
-              Normal baseline crowd flow and fluctuations.
-            </span>
-          </button>
-
-          <button
-            onClick={() => handleSetScenario("crowd_rush")}
-            className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between h-22 ${
-              currentScenario === "crowd_rush"
-                ? "bg-white border-amber-500 ring-2 ring-amber-500/20 text-neutral-900 shadow-xs font-bold"
-                : "bg-white border-neutral-200 hover:border-teal-500/50 text-neutral-700"
-            }`}
-          >
-            <span className="text-xs font-bold block text-amber-700">
-              🔥 Crowd Rush
-            </span>
-            <span className="text-[10px] text-neutral-400 block leading-tight mt-1 font-normal">
-              Spike Gate A & C northwest/south entries.
-            </span>
-          </button>
-
-          <button
-            onClick={() => handleSetScenario("gate_b_emergency")}
-            className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between h-22 ${
-              currentScenario === "gate_b_emergency"
-                ? "bg-white border-rose-500 ring-2 ring-rose-500/20 text-neutral-900 shadow-xs font-bold"
-                : "bg-white border-neutral-200 hover:border-teal-500/50 text-neutral-700"
-            }`}
-          >
-            <span className="text-xs font-bold block text-rose-700">
-              ⚠️ Gate B Lock
-            </span>
-            <span className="text-[10px] text-neutral-400 block leading-tight mt-1 font-normal">
-              Simulate scanning node outage at Gate B.
-            </span>
-          </button>
-
-          <button
-            onClick={() => handleSetScenario("extreme_rain")}
-            className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between h-22 ${
-              currentScenario === "extreme_rain"
-                ? "bg-white border-blue-500 ring-2 ring-blue-500/20 text-neutral-900 shadow-xs font-bold"
-                : "bg-white border-neutral-200 hover:border-teal-500/50 text-neutral-700"
-            }`}
-          >
-            <span className="text-xs font-bold block text-blue-700">
-              🌧️ Heavy Rain
-            </span>
-            <span className="text-[10px] text-neutral-400 block leading-tight mt-1 font-normal">
-              Universal pedestrian slow footing velocity.
-            </span>
-          </button>
-
-          <button
-            onClick={() => handleSetScenario("egress_surge")}
-            className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between h-22 ${
-              currentScenario === "egress_surge"
-                ? "bg-white border-purple-500 ring-2 ring-purple-500/20 text-neutral-900 shadow-xs font-bold"
-                : "bg-white border-neutral-200 hover:border-teal-500/50 text-neutral-700"
-            }`}
-          >
-            <span className="text-xs font-bold block text-purple-700">
-              🚪 Egress Surge
-            </span>
-            <span className="text-[10px] text-neutral-400 block leading-tight mt-1 font-normal">
-              Simulate transit outbound links post-match egress.
-            </span>
-          </button>
-        </div>
-      </div>
+      <ScenarioSimulator
+        isHighContrast={isHighContrast}
+        currentScenario={currentScenario}
+        onSetScenario={handleSetScenario}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* 2. Left Side: Interactive Live Zones Grid (7 cols) */}
@@ -750,89 +620,11 @@ export default function OperatorDashboard({
           </div>
 
           {/* Tournament Staff & Volunteer Dispatch Grid (Persona Support Alignment) */}
-          <div
-            className="bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-sm space-y-4"
-            id="staff-volunteer-dispatch-center"
-          >
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
-              <h3 className="font-display font-bold text-neutral-900 text-base flex items-center gap-2">
-                <Users className="h-4.5 w-4.5 text-teal-600 animate-pulse" />
-                Staff & Volunteer Dispatch Grid
-              </h3>
-              <span className="text-[10px] bg-teal-50 text-teal-800 border border-teal-200 font-bold px-2 py-0.5 rounded-md font-mono uppercase">
-                Active Coordination
-              </span>
-            </div>
-
-            <div className="p-3.5 bg-teal-50/50 border border-teal-100 rounded-xl text-xs space-y-1">
-              <span className="font-bold text-teal-950 block">
-                Persona Support: Venue Staff & Volunteers
-              </span>
-              <p className="text-neutral-600 text-[11px] leading-relaxed">
-                Coordinate and deploy MetLife Stadium tournament volunteers to
-                high-density gates and concourses to help guide spectators
-                safely.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <div className="grid grid-cols-2 gap-2 text-[10px] font-bold text-neutral-400 uppercase tracking-wider pb-1">
-                <span>Stadium Location Zone</span>
-                <span className="text-right">Deployed Staff / Action</span>
-              </div>
-
-              {zones.map((zone) => {
-                const staffCount = volunteerStaffCounts[zone.zoneId] || 0;
-                const isHighRisk = zone.riskLevel === "high";
-
-                return (
-                  <div
-                    key={zone.zoneId}
-                    className={`flex items-center justify-between p-2.5 rounded-xl border text-xs transition-all ${
-                      isHighRisk
-                        ? "bg-rose-50/50 border-rose-200"
-                        : "bg-neutral-50/50 border-neutral-200/50"
-                    }`}
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-bold text-neutral-900">
-                        {zone.name}
-                      </span>
-                      <span className="text-[10.5px] text-neutral-400 uppercase tracking-wide font-semibold">
-                        {zone.type} · Risk:{" "}
-                        <strong
-                          className={
-                            isHighRisk ? "text-rose-600" : "text-neutral-500"
-                          }
-                        >
-                          {zone.riskLevel}
-                        </strong>
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2.5">
-                      <div className="text-right">
-                        <span className="font-mono font-bold text-neutral-900 bg-neutral-100/80 px-2 py-1 rounded border border-neutral-200/50">
-                          {staffCount} staff
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => handleDispatchVolunteer(zone.zoneId)}
-                        className={`text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg border transition-all cursor-pointer ${
-                          isHighRisk
-                            ? "bg-rose-600 hover:bg-rose-700 text-white border-rose-600 shadow-xs"
-                            : "bg-white hover:bg-neutral-100 text-teal-800 border-neutral-300 shadow-xs"
-                        }`}
-                        title={`Deploy additional volunteer staff to ${zone.name}`}
-                      >
-                        Deploy +2
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <StaffVolunteerDispatch
+            zones={zones}
+            volunteerStaffCounts={volunteerStaffCounts}
+            onDispatchVolunteer={handleDispatchVolunteer}
+          />
 
           {/* Interactive Human-Editable Incident Log */}
           <div className="bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-sm space-y-4">

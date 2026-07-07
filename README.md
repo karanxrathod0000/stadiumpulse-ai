@@ -66,10 +66,14 @@ To keep the application highly maintainable, StadiumPulse AI cleanly separates t
 - `/src/data/`: Manages mock datasets (`zones.json`) and the organic live data generator state-mutator (`generator.ts`).
 - `/src/components/`: Modular, accessible React UI components.
   - `FanApp.tsx`: Interactive chat assistant interface with native Text-To-Speech (TTS) reading.
-  - `OperatorDashboard.tsx`: High-level operational command board with real-time telemetric feeds.
+  - `OperatorDashboard.tsx`: High-level operational command board with real-time telemetric feeds. Decomposed for high code quality.
+  - `ScenarioSimulator.tsx`: Dedicated crowd dynamic and weather simulation panel.
+  - `StaffVolunteerDispatch.tsx`: Coordinator grid for stadium volunteer deployments.
   - `StadiumMap.tsx`: Vectorized spatial grid mapping individual sector risks.
   - `Sparkline.tsx`: Accessible SVG density-trend charts with full screen-reader descriptive labels.
   - `OnboardingTour.tsx`: User walkthrough system for first-time visitors.
+- `/src/utils/`:
+  - `riskUtils.ts`: Shared visual styling, Tailwind class mapping, and hex colors used symmetrically.
 - `/src/types.ts`: Global TypeScript interfaces aligning the frontend, backend, and scoring model with full type-safety.
 
 ---

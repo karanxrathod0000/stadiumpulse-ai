@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { ZoneRisk, AssistantResponse, UserProfile } from "../types";
 import StadiumMap from "./StadiumMap";
+import { getRiskColorClasses as getRiskColorClassesImported } from "../utils/riskUtils";
 
 interface FanAppProps {
   isHighContrast: boolean;
@@ -182,24 +183,7 @@ export default function FanApp({
   ];
 
   const getRiskColorClasses = (level: string) => {
-    if (isHighContrast) {
-      switch (level) {
-        case "high":
-          return "bg-black border-4 border-yellow-400 text-yellow-400 font-extrabold";
-        case "medium":
-          return "bg-black border-4 border-white text-white";
-        default:
-          return "bg-black border border-neutral-400 text-neutral-200";
-      }
-    }
-    switch (level) {
-      case "high":
-        return "bg-rose-50 border-rose-200 text-rose-700";
-      case "medium":
-        return "bg-amber-50 border-amber-200 text-amber-700";
-      default:
-        return "bg-emerald-50 border-emerald-200 text-emerald-700";
-    }
+    return getRiskColorClassesImported(level, isHighContrast);
   };
 
   // Text-To-Speech (TTS) engine with robust cancellation & screen accessibility

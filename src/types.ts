@@ -77,4 +77,3 @@ export interface OperationalNotification {
   isRead: boolean;
   type: "incident" | "risk_alert";
 }
-

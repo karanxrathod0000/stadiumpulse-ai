@@ -3,7 +3,7 @@ import {
   getRiskLevel,
   getFlowStatus,
   getZoneRisk,
-  rankZonesForFan
+  rankZonesForFan,
 } from "./riskScoring";
 import { Zone } from "../data/generator";
 
@@ -52,7 +52,7 @@ describe("StadiumPulse Risk Scoring Decision Engine", () => {
         flowPerMinute: 15,
         stepFreeAccess: true,
         lat: 40.8,
-        lng: -74.0
+        lng: -74.0,
       };
 
       const result = getZoneRisk(sampleZone);
@@ -61,6 +61,24 @@ describe("StadiumPulse Risk Scoring Decision Engine", () => {
       expect(result.riskLevel).toBe("high");
       expect(result.flowStatus).toBe("congested");
       expect(result.recommendedAction).toContain("CRITICAL");
+    });
+
+    it("should provide flow rate warning for congested flow status even with low risk", () => {
+      const slowZone: Zone = {
+        id: "gate-slow",
+        name: "Slow Gate",
+        type: "gate",
+        capacityPerSqm: 5.0,
+        currentDensity: 1.5,
+        flowPerMinute: 10,
+        stepFreeAccess: true,
+        lat: 40.8,
+        lng: -74.0,
+      };
+      const result = getZoneRisk(slowZone);
+      expect(result.riskLevel).toBe("low");
+      expect(result.flowStatus).toBe("congested");
+      expect(result.recommendedAction).toContain("ATTENTION");
     });
   });
 
@@ -75,7 +93,7 @@ describe("StadiumPulse Risk Scoring Decision Engine", () => {
         flowPerMinute: 30,
         stepFreeAccess: true,
         lat: 40.8,
-        lng: -74.0
+        lng: -74.0,
       },
       {
         id: "zone-2",
@@ -86,7 +104,7 @@ describe("StadiumPulse Risk Scoring Decision Engine", () => {
         flowPerMinute: 30,
         stepFreeAccess: true,
         lat: 40.8,
-        lng: -74.0
+        lng: -74.0,
       },
       {
         id: "zone-3",
@@ -97,7 +115,7 @@ describe("StadiumPulse Risk Scoring Decision Engine", () => {
         flowPerMinute: 30,
         stepFreeAccess: false,
         lat: 40.8,
-        lng: -74.0
+        lng: -74.0,
       },
       {
         id: "zone-4",
@@ -108,13 +126,13 @@ describe("StadiumPulse Risk Scoring Decision Engine", () => {
         flowPerMinute: 30,
         stepFreeAccess: true,
         lat: 40.8,
-        lng: -74.0
-      }
+        lng: -74.0,
+      },
     ];
 
     it("should sort zones with lowest risk first, then by lowest density", () => {
       const sorted = rankZonesForFan(mockZones);
-      
+
       expect(sorted[0].zoneId).toBe("zone-2"); // Low risk, 1.2 density
       expect(sorted[1].zoneId).toBe("zone-4"); // Low risk, 1.5 density
       expect(sorted[2].zoneId).toBe("zone-3"); // Medium risk, 3.5 density
@@ -123,10 +141,31 @@ describe("StadiumPulse Risk Scoring Decision Engine", () => {
 
     it("should filter out zones that do not have step-free access if requested", () => {
       const sorted = rankZonesForFan(mockZones, { needsStepFree: true });
-      
-      const containsZone3 = sorted.some(z => z.zoneId === "zone-3");
+
+      const containsZone3 = sorted.some((z) => z.zoneId === "zone-3");
       expect(containsZone3).toBe(false);
       expect(sorted.length).toBe(3);
+    });
+
+    it("should filter by zone type if requested", () => {
+      const zonesWithType: Zone[] = [
+        ...mockZones,
+        {
+          id: "zone-5",
+          name: "Zone 5 (Concourse)",
+          type: "concourse",
+          capacityPerSqm: 5.0,
+          currentDensity: 1.0,
+          flowPerMinute: 30,
+          stepFreeAccess: true,
+          lat: 40.8,
+          lng: -74.0,
+        },
+      ];
+      const sorted = rankZonesForFan(zonesWithType, { type: "concourse" });
+      expect(sorted.every((z) => z.type === "concourse")).toBe(true);
+      expect(sorted.length).toBe(1);
+      expect(sorted[0].zoneId).toBe("zone-5");
     });
   });
 });

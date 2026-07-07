@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
-import { 
-  Send, 
-  MapPin, 
-  Sparkles, 
-  Volume2, 
-  Accessibility, 
-  ArrowRight, 
-  ChevronRight, 
-  Compass, 
-  Navigation, 
+import {
+  Send,
+  MapPin,
+  Sparkles,
+  Volume2,
+  Accessibility,
+  ArrowRight,
+  ChevronRight,
+  Compass,
+  Navigation,
   RefreshCw,
   Clock,
   ThumbsUp,
@@ -16,7 +16,7 @@ import {
   HelpCircle,
   Footprints,
   AlertOctagon,
-  VolumeX
+  VolumeX,
 } from "lucide-react";
 import { ZoneRisk, AssistantResponse, UserProfile } from "../types";
 import StadiumMap from "./StadiumMap";
@@ -45,15 +45,15 @@ const LANGUAGE_MAPPING: Record<string, string> = {
   hi: "Hindi (हिन्दी)",
   ar: "Arabic (العربية)",
   pt: "Portuguese (Português)",
-  ja: "Japanese (日本語)"
+  ja: "Japanese (日本語)",
 };
 
-export default function FanApp({ 
-  isHighContrast, 
-  reducedMotion, 
+export default function FanApp({
+  isHighContrast,
+  reducedMotion,
   userProfile,
   initialRouteZoneId,
-  onClearInitialRoute
+  onClearInitialRoute,
 }: FanAppProps) {
   const [message, setMessage] = useState("");
   const [needsStepFree, setNeedsStepFree] = useState(false);
@@ -63,16 +63,21 @@ export default function FanApp({
       id: "welcome",
       sender: "ai",
       text: "Welcome to StadiumPulse AI for the FIFA World Cup 2026! ⚽ How can I help you navigate the venue today? Ask me about gates, accessibility routes, transit links, or safety updates. (Soporte disponible en español, français, deutsch, and more!)",
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    }
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    },
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const [recommendedZone, setRecommendedZone] = useState<ZoneRisk | null>(null);
   const [detectedLanguage, setDetectedLanguage] = useState<string>("English");
-  
+
   // TTS State
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [currentSpokenText, setCurrentSpokenText] = useState<string | null>(null);
+  const [currentSpokenText, setCurrentSpokenText] = useState<string | null>(
+    null,
+  );
 
   // Failure & Retry states
   const [lastSentMessage, setLastSentMessage] = useState<string>("");
@@ -83,14 +88,18 @@ export default function FanApp({
   // Scroll to bottom of chat
   useEffect(() => {
     if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+      chatEndRef.current.scrollIntoView({
+        behavior: reducedMotion ? "auto" : "smooth",
+      });
     }
   }, [chatHistory, isTyping]);
 
   // Sync detected language badge to profile override if manual is set
   useEffect(() => {
     if (userProfile.languageOverride !== "auto") {
-      setDetectedLanguage(LANGUAGE_MAPPING[userProfile.languageOverride] || "English");
+      setDetectedLanguage(
+        LANGUAGE_MAPPING[userProfile.languageOverride] || "English",
+      );
     } else {
       setDetectedLanguage("Auto-Detect");
     }
@@ -104,10 +113,11 @@ export default function FanApp({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            message: "Hello, recommend the best entryway for a fan based on current density.",
+            message:
+              "Hello, recommend the best entryway for a fan based on current density.",
             needsStepFree,
-            preferredLanguage: userProfile.languageOverride
-          })
+            preferredLanguage: userProfile.languageOverride,
+          }),
         });
         if (response.ok) {
           const data: AssistantResponse = await response.json();
@@ -137,7 +147,9 @@ export default function FanApp({
             setZones(data.zones);
             // Auto update recommended zone from polled metrics to keep UI fresh
             if (recommendedZone) {
-              const updated = data.zones.find((z: ZoneRisk) => z.zoneId === recommendedZone.zoneId);
+              const updated = data.zones.find(
+                (z: ZoneRisk) => z.zoneId === recommendedZone.zoneId,
+              );
               if (updated) {
                 setRecommendedZone(updated);
               }
@@ -154,24 +166,39 @@ export default function FanApp({
   }, [recommendedZone]);
 
   const QUICK_PROMPTS = [
-    { text: "Which entrance has the lowest queue right now?", icon: Navigation },
-    { text: "Where is wheelchair-accessible seating and entry?", icon: Accessibility },
-    { text: "How do I get to the Metro after the final whistle?", icon: Compass },
-    { text: "Fastest way to get food without long queues?", icon: Clock }
+    {
+      text: "Which entrance has the lowest queue right now?",
+      icon: Navigation,
+    },
+    {
+      text: "Where is wheelchair-accessible seating and entry?",
+      icon: Accessibility,
+    },
+    {
+      text: "How do I get to the Metro after the final whistle?",
+      icon: Compass,
+    },
+    { text: "Fastest way to get food without long queues?", icon: Clock },
   ];
 
   const getRiskColorClasses = (level: string) => {
     if (isHighContrast) {
       switch (level) {
-        case "high": return "bg-black border-4 border-yellow-400 text-yellow-400 font-extrabold";
-        case "medium": return "bg-black border-4 border-white text-white";
-        default: return "bg-black border border-neutral-400 text-neutral-200";
+        case "high":
+          return "bg-black border-4 border-yellow-400 text-yellow-400 font-extrabold";
+        case "medium":
+          return "bg-black border-4 border-white text-white";
+        default:
+          return "bg-black border border-neutral-400 text-neutral-200";
       }
     }
     switch (level) {
-      case "high": return "bg-rose-50 border-rose-200 text-rose-700";
-      case "medium": return "bg-amber-50 border-amber-200 text-amber-700";
-      default: return "bg-emerald-50 border-emerald-200 text-emerald-700";
+      case "high":
+        return "bg-rose-50 border-rose-200 text-rose-700";
+      case "medium":
+        return "bg-amber-50 border-amber-200 text-amber-700";
+      default:
+        return "bg-emerald-50 border-emerald-200 text-emerald-700";
     }
   };
 
@@ -188,9 +215,9 @@ export default function FanApp({
 
     // Cancel current reading
     window.speechSynthesis.cancel();
-    
+
     const utterance = new SpeechSynthesisUtterance(text);
-    
+
     // Map preferred language to TTS voice if applicable
     if (userProfile.languageOverride !== "auto") {
       utterance.lang = userProfile.languageOverride;
@@ -223,7 +250,7 @@ export default function FanApp({
   // Trigger initial routing if redirected from the map view with a target zone
   useEffect(() => {
     if (initialRouteZoneId && zones.length > 0) {
-      const zoneObj = zones.find(z => z.zoneId === initialRouteZoneId);
+      const zoneObj = zones.find((z) => z.zoneId === initialRouteZoneId);
       const zoneName = zoneObj ? zoneObj.name : initialRouteZoneId;
       handleSendMessage(`Give me routing directions to ${zoneName}`);
       if (onClearInitialRoute) {
@@ -243,17 +270,23 @@ export default function FanApp({
       id: `user-${Date.now()}`,
       sender: "user",
       text: textToSend,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     };
 
-    setChatHistory(prev => [...prev, userMsg]);
+    setChatHistory((prev) => [...prev, userMsg]);
     setMessage("");
     setIsTyping(true);
 
     try {
       // Prepend manual language instructions if a preference override is defined in profile
       let payloadMessage = textToSend;
-      if (userProfile.languageOverride && userProfile.languageOverride !== "auto") {
+      if (
+        userProfile.languageOverride &&
+        userProfile.languageOverride !== "auto"
+      ) {
         const targetLangName = LANGUAGE_MAPPING[userProfile.languageOverride];
         if (targetLangName) {
           payloadMessage = `[Respond ONLY in ${targetLangName}] ${textToSend}`;
@@ -266,8 +299,8 @@ export default function FanApp({
         body: JSON.stringify({
           message: payloadMessage,
           needsStepFree: needsStepFree,
-          preferredLanguage: userProfile.languageOverride
-        })
+          preferredLanguage: userProfile.languageOverride,
+        }),
       });
 
       if (!response.ok) {
@@ -279,12 +312,21 @@ export default function FanApp({
       // Cosmetic language detector
       let lang = "English";
       const replyLower = data.reply.toLowerCase();
-      if (replyLower.includes("hola") || replyLower.includes("puerta") || replyLower.includes("entrada")) lang = "Español";
-      else if (replyLower.includes("bonjour") || replyLower.includes("porte")) lang = "Français";
-      else if (replyLower.includes("willkommen") || replyLower.includes("tor")) lang = "Deutsch";
-      else if (replyLower.includes("namaste") || replyLower.includes("swagat")) lang = "Hindi";
-      else if (replyLower.includes("marhaban") || replyLower.includes("bawaba")) lang = "العربية";
-      
+      if (
+        replyLower.includes("hola") ||
+        replyLower.includes("puerta") ||
+        replyLower.includes("entrada")
+      )
+        lang = "Español";
+      else if (replyLower.includes("bonjour") || replyLower.includes("porte"))
+        lang = "Français";
+      else if (replyLower.includes("willkommen") || replyLower.includes("tor"))
+        lang = "Deutsch";
+      else if (replyLower.includes("namaste") || replyLower.includes("swagat"))
+        lang = "Hindi";
+      else if (replyLower.includes("marhaban") || replyLower.includes("bawaba"))
+        lang = "العربية";
+
       if (userProfile.languageOverride === "auto") {
         setDetectedLanguage(lang);
       }
@@ -297,30 +339,41 @@ export default function FanApp({
       }
 
       const aiReply = data.reply;
-      setChatHistory(prev => [...prev, {
-        id: `ai-${Date.now()}`,
-        sender: "ai",
-        text: aiReply,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-      }]);
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          id: `ai-${Date.now()}`,
+          sender: "ai",
+          text: aiReply,
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        },
+      ]);
 
       // TTS Auto-Read Sync
       if (userProfile.accessibility.ttsAutoRead) {
         // Delay slightly for natural UI experience
         setTimeout(() => speakText(aiReply), 400);
       }
-
     } catch (error) {
       console.error("Error sending message to fan assistant:", error);
       setApiErrorOccurred(true);
-      
-      setChatHistory(prev => [...prev, {
-        id: `ai-err-${Date.now()}`,
-        sender: "ai",
-        text: "I am having trouble reaching the stadium sensors right now. Please inspect the live safety status cards or try again.",
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        isError: true
-      }]);
+
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          id: `ai-err-${Date.now()}`,
+          sender: "ai",
+          text: "I am having trouble reaching the stadium sensors right now. Please inspect the live safety status cards or try again.",
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          isError: true,
+        },
+      ]);
     } finally {
       setIsTyping(false);
     }
@@ -334,47 +387,60 @@ export default function FanApp({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6" id="fan-app-view">
-      
       {/* Left Column: Core Layout and Map Context */}
       <div className="md:col-span-5 space-y-6">
-        
         {/* Accessibility Toggle Panel */}
-        <div className={`p-5 rounded-2xl border ${
-          isHighContrast ? "bg-black border-4 border-white text-white" : "bg-white border-neutral-200/80"
-        }`}>
+        <div
+          className={`p-5 rounded-2xl border ${
+            isHighContrast
+              ? "bg-black border-4 border-white text-white"
+              : "bg-white border-neutral-200/80"
+          }`}
+        >
           <h4 className="font-display font-bold text-xs uppercase tracking-wider mb-2 flex items-center gap-2">
             <Accessibility className="h-4 w-4 text-teal-600" />
             Adaptive Routing Filters
           </h4>
           <p className="text-xs text-neutral-500 mb-4">
-            Activate step-free access routing. StadiumPulse will bypass stairs and narrow turnstiles.
+            Activate step-free access routing. StadiumPulse will bypass stairs
+            and narrow turnstiles.
           </p>
 
           <div className="space-y-3">
-            <label 
+            <label
               className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer select-none transition-all ${
-                needsStepFree 
-                  ? "bg-teal-50 border-teal-500/80 text-teal-950" 
+                needsStepFree
+                  ? "bg-teal-50 border-teal-500/80 text-teal-950"
                   : "bg-neutral-50 border-neutral-200 hover:bg-neutral-100/80 text-neutral-700"
               }`}
               id="step-free-toggle-label"
             >
               <div className="flex items-center gap-3">
-                <Accessibility className={`h-5 w-5 ${needsStepFree ? "text-teal-700" : "text-neutral-500"}`} />
+                <Accessibility
+                  className={`h-5 w-5 ${needsStepFree ? "text-teal-700" : "text-neutral-500"}`}
+                />
                 <div>
-                  <span className="text-xs font-bold block">Step-Free Wheelchair Access</span>
-                  <span className="text-[10px] opacity-80 block">Excludes escalators and steps.</span>
+                  <span className="text-xs font-bold block">
+                    Step-Free Wheelchair Access
+                  </span>
+                  <span className="text-[10px] opacity-80 block">
+                    Excludes escalators and steps.
+                  </span>
                 </div>
               </div>
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 className="sr-only"
                 checked={needsStepFree}
                 onChange={(e) => setNeedsStepFree(e.target.checked)}
                 aria-label="Toggle step-free wheelchair routing filter"
               />
-              <div className={`w-11 h-6 rounded-full transition-colors relative ${needsStepFree ? "bg-teal-600" : "bg-neutral-300"}`}>
-                <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${needsStepFree ? "translate-x-6" : "translate-x-1"}`} />
+              <div
+                className={`w-11 h-6 rounded-full transition-colors relative ${needsStepFree ? "bg-teal-600" : "bg-neutral-300"}`}
+              >
+                <div
+                  className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${needsStepFree ? "translate-x-6" : "translate-x-1"}`}
+                />
               </div>
             </label>
           </div>
@@ -385,10 +451,12 @@ export default function FanApp({
           zones={zones}
           selectedZoneId={recommendedZone ? recommendedZone.zoneId : null}
           onSelectZone={(zoneId) => {
-            const selected = zones.find(z => z.zoneId === zoneId);
+            const selected = zones.find((z) => z.zoneId === zoneId);
             if (selected) {
               setRecommendedZone(selected);
-              setMessage(`How is the crowd at ${selected.name} and how do I get there?`);
+              setMessage(
+                `How is the crowd at ${selected.name} and how do I get there?`,
+              );
             }
           }}
           isHighContrast={isHighContrast}
@@ -398,42 +466,66 @@ export default function FanApp({
 
         {/* Sustainability & Transport Tip Card */}
         {(() => {
-          const transitExit = zones.find(z => z.zoneId === "exit-east");
+          const transitExit = zones.find((z) => z.zoneId === "exit-east");
           if (!transitExit) return null;
-          
+
           const isHigh = transitExit.riskLevel === "high";
-          
+
+          const seconds = new Date().getSeconds();
+          // Compute dynamic live countdowns based on seconds to simulate real-time updates
+          const nextShuttle = 5 - (Math.floor(seconds / 12) % 5 || 4);
+          const nextMetro = 3 - (Math.floor(seconds / 20) % 3 || 2);
+
           return (
-            <div className={`p-5 rounded-2xl border transition-all ${
-              isHighContrast 
-                ? "bg-black border-4 border-yellow-400 text-yellow-400 font-extrabold" 
-                : "bg-emerald-50/60 border-emerald-200/60 text-emerald-950 shadow-xs"
-            }`}>
+            <div
+              className={`p-5 rounded-2xl border transition-all ${
+                isHighContrast
+                  ? "bg-black border-4 border-yellow-400 text-yellow-400 font-extrabold"
+                  : "bg-emerald-50/60 border-emerald-200/60 text-emerald-950 shadow-xs"
+              }`}
+            >
               <h4 className="font-display font-bold text-xs uppercase tracking-wider mb-2 flex items-center gap-2">
-                <span className="p-1 bg-emerald-100 text-emerald-700 rounded-md shrink-0">🌱</span>
+                <span className="p-1 bg-emerald-100 text-emerald-700 rounded-md shrink-0">
+                  🌱
+                </span>
                 Post-Match Green Transit Nudge
               </h4>
               <p className="text-xs font-semibold text-neutral-800 mb-1.5 leading-snug">
-                {isHigh 
+                {isHigh
                   ? `High passenger volume detected at Exit East (${transitExit.currentDensity} p/m²).`
-                  : `Transit Exit East has optimal throughput flow (${transitExit.currentDensity} p/m²).`
-                }
+                  : `Transit Exit East has optimal throughput flow (${transitExit.currentDensity} p/m²).`}
               </p>
-              <p className="text-[11px] text-neutral-500 leading-relaxed">
+              <p className="text-[11px] text-neutral-500 leading-relaxed mb-3">
                 {isHigh
                   ? "Sustainable recommendation: Board Metro Line 2 via Concourse North to Gate A pathways first. This distributes footprint evenly and avoids queue carbon exhaust."
-                  : "Sustainable recommendation: Board Metro Line 2 from Transit Exit East! This is the fastest, lowest-congestion exit route and reduces individual post-match vehicle carbon emissions."
-                }
+                  : "Sustainable recommendation: Board Metro Line 2 from Transit Exit East! This is the fastest, lowest-congestion exit route and reduces individual post-match vehicle carbon emissions."}
               </p>
+
+              {/* Dynamic Transit Telemetry (Accessibility & Sustainability Highlight) */}
+              <div className="pt-2.5 border-t border-emerald-100/50 flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-emerald-800">
+                <span className="flex items-center gap-1.5 bg-emerald-100/50 px-2 py-1 rounded-md">
+                  🚍 Next Green Shuttle:{" "}
+                  <strong className="font-bold text-emerald-950">
+                    {nextShuttle} min{nextShuttle > 1 ? "s" : ""}
+                  </strong>
+                </span>
+                <span className="flex items-center gap-1.5 bg-emerald-100/50 px-2 py-1 rounded-md">
+                  🚇 Metro Line 2:{" "}
+                  <strong className="font-bold text-emerald-950">
+                    {nextMetro} min{nextMetro > 1 ? "s" : ""}
+                  </strong>
+                </span>
+              </div>
             </div>
           );
         })()}
-
       </div>
 
       {/* Right Column: Active AI Dialogue Console with Pinned Entryway */}
-      <div className="md:col-span-7 flex flex-col h-[540px] bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden" id="fan-assistant-chat-panel">
-        
+      <div
+        className="md:col-span-7 flex flex-col h-[540px] bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden"
+        id="fan-assistant-chat-panel"
+      >
         {/* Chat Panel Header */}
         <div className="bg-neutral-50 px-5 py-4 border-b border-neutral-100 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
@@ -442,7 +534,9 @@ export default function FanApp({
               <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-900 font-display">
                 Multilingual Navigation Co-Pilot
               </h4>
-              <p className="text-[10px] text-neutral-400">Grounded on real-time crowd metrics</p>
+              <p className="text-[10px] text-neutral-400">
+                Grounded on real-time crowd metrics
+              </p>
             </div>
           </div>
 
@@ -454,9 +548,13 @@ export default function FanApp({
         </div>
 
         {/* Pinned Recommended Entrance Card right inside dialogue console for persistent viewing */}
-        <div className={`px-5 py-3 border-b transition-all ${
-          isHighContrast ? "bg-black border-2 border-white text-white" : "bg-teal-50/40 border-neutral-150"
-        } shrink-0`}>
+        <div
+          className={`px-5 py-3 border-b transition-all ${
+            isHighContrast
+              ? "bg-black border-2 border-white text-white"
+              : "bg-teal-50/40 border-neutral-150"
+          } shrink-0`}
+        >
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
               <span className="text-[9px] font-bold text-teal-700 uppercase block font-sans tracking-widest flex items-center gap-1.5">
@@ -464,23 +562,30 @@ export default function FanApp({
                 Pinned Real-time Optimal Entrance
               </span>
               <h5 className="font-bold text-xs text-neutral-900 truncate font-display mt-0.5">
-                {recommendedZone ? recommendedZone.name : "Analyzing stadium entries..."}
+                {recommendedZone
+                  ? recommendedZone.name
+                  : "Analyzing stadium entries..."}
               </h5>
             </div>
-            
+
             {recommendedZone ? (
               <div className="flex items-center gap-2 shrink-0">
-                <span className={`text-[9px] font-bold px-2 py-0.5 rounded border ${
-                  recommendedZone.riskLevel === "high"
-                    ? "bg-rose-50 text-rose-700 border-rose-200"
-                    : recommendedZone.riskLevel === "medium"
-                    ? "bg-amber-50 text-amber-700 border-amber-200"
-                    : "bg-emerald-50 text-emerald-700 border-emerald-200"
-                }`}>
+                <span
+                  className={`text-[9px] font-bold px-2 py-0.5 rounded border ${
+                    recommendedZone.riskLevel === "high"
+                      ? "bg-rose-50 text-rose-700 border-rose-200"
+                      : recommendedZone.riskLevel === "medium"
+                        ? "bg-amber-50 text-amber-700 border-amber-200"
+                        : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  }`}
+                >
                   {recommendedZone.riskLevel.toUpperCase()} RISK
                 </span>
                 {recommendedZone.stepFreeAccess && (
-                  <span className="p-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200" title="Step-free entrance">
+                  <span
+                    className="p-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200"
+                    title="Step-free entrance"
+                  >
                     <Accessibility className="h-3 w-3" />
                   </span>
                 )}
@@ -492,26 +597,32 @@ export default function FanApp({
         </div>
 
         {/* Chat History Messages Stream */}
-        <div className="flex-grow overflow-y-auto p-5 space-y-4" id="chat-stream">
+        <div
+          className="flex-grow overflow-y-auto p-5 space-y-4"
+          id="chat-stream"
+        >
           {chatHistory.map((msg) => {
             const isAI = msg.sender === "ai";
-            const isCurrentlyPlaying = isSpeaking && currentSpokenText === msg.text;
+            const isCurrentlyPlaying =
+              isSpeaking && currentSpokenText === msg.text;
             return (
-              <div 
+              <div
                 key={msg.id}
                 className={`flex flex-col max-w-[85%] ${!isAI ? "ml-auto items-end" : "mr-auto items-start"}`}
               >
-                <div className={`p-4 rounded-2xl text-xs leading-relaxed ${
-                  !isAI
-                    ? isHighContrast
-                      ? "bg-black border-2 border-white text-white rounded-br-none font-bold"
-                      : "bg-teal-600 text-white rounded-br-none font-semibold"
-                    : msg.isError
-                    ? "bg-red-50 border border-red-200 text-red-900 rounded-bl-none"
-                    : isHighContrast
-                    ? "bg-white text-black border-2 border-black rounded-bl-none font-bold"
-                    : "bg-neutral-100 text-neutral-800 rounded-bl-none"
-                }`}>
+                <div
+                  className={`p-4 rounded-2xl text-xs leading-relaxed ${
+                    !isAI
+                      ? isHighContrast
+                        ? "bg-black border-2 border-white text-white rounded-br-none font-bold"
+                        : "bg-teal-600 text-white rounded-br-none font-semibold"
+                      : msg.isError
+                        ? "bg-red-50 border border-red-200 text-red-900 rounded-bl-none"
+                        : isHighContrast
+                          ? "bg-white text-black border-2 border-black rounded-bl-none font-bold"
+                          : "bg-neutral-100 text-neutral-800 rounded-bl-none"
+                  }`}
+                >
                   {msg.text}
 
                   {/* Inline Error retry option */}
@@ -532,14 +643,18 @@ export default function FanApp({
                 <div className="flex items-center gap-2 mt-1 text-[10px] text-neutral-400 font-mono">
                   <span>{msg.timestamp}</span>
                   {isAI && !msg.isError && (
-                    <button 
+                    <button
                       onClick={() => speakText(msg.text)}
                       className="hover:text-teal-600 transition-colors p-1 rounded-md hover:bg-neutral-100 flex items-center gap-1 cursor-pointer"
                       title="Read this response aloud"
                       aria-label="Read this response aloud"
                     >
-                      <Volume2 className={`h-3 w-3 ${isCurrentlyPlaying ? "text-teal-600 animate-pulse" : "text-neutral-400"}`} />
-                      <span className="text-[8px] font-sans font-bold">Listen</span>
+                      <Volume2
+                        className={`h-3 w-3 ${isCurrentlyPlaying ? "text-teal-600 animate-pulse" : "text-neutral-400"}`}
+                      />
+                      <span className="text-[8px] font-sans font-bold">
+                        Listen
+                      </span>
                     </button>
                   )}
                 </div>
@@ -577,17 +692,19 @@ export default function FanApp({
         </div>
 
         {/* Form Chat Input area */}
-        <form 
+        <form
           onSubmit={(e) => {
             e.preventDefault();
             handleSendMessage(message);
           }}
           className="p-3 border-t border-neutral-100 flex gap-2 bg-neutral-50 shrink-0"
         >
-          <input 
+          <input
             type="text"
             className={`flex-1 text-xs px-4 py-3 rounded-xl border focus:outline-hidden focus:ring-3 focus:ring-teal-500/10 transition-all ${
-              isHighContrast ? "bg-black border-white text-white" : "bg-white border-neutral-300 focus:border-teal-500"
+              isHighContrast
+                ? "bg-black border-white text-white"
+                : "bg-white border-neutral-300 focus:border-teal-500"
             }`}
             placeholder="Type your question (e.g. 'How congested is Gate A right now?')..."
             value={message}
@@ -602,8 +719,8 @@ export default function FanApp({
               !message.trim() || isTyping
                 ? "bg-neutral-200 text-neutral-400 cursor-not-allowed"
                 : isHighContrast
-                ? "bg-yellow-400 hover:bg-yellow-500 text-black font-extrabold"
-                : "bg-teal-600 hover:bg-teal-700 text-white shadow-md active:translate-y-px"
+                  ? "bg-yellow-400 hover:bg-yellow-500 text-black font-extrabold"
+                  : "bg-teal-600 hover:bg-teal-700 text-white shadow-md active:translate-y-px"
             }`}
             title="Send query"
             aria-label="Send query"
@@ -611,9 +728,7 @@ export default function FanApp({
             <Send className="h-4 w-4" />
           </button>
         </form>
-
       </div>
-
     </div>
   );
 }

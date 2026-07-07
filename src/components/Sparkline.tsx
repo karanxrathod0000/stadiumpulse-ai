@@ -7,10 +7,18 @@ interface SparklineProps {
   isHighContrast: boolean;
 }
 
-export default function Sparkline({ history = [], width = 100, height = 30, isHighContrast }: SparklineProps) {
+export default function Sparkline({
+  history = [],
+  width = 100,
+  height = 30,
+  isHighContrast,
+}: SparklineProps) {
   if (history.length < 2) {
     return (
-      <div className="text-[10px] text-neutral-400 font-mono" aria-label="Not enough historical data yet">
+      <div
+        className="text-[10px] text-neutral-400 font-mono"
+        aria-label="Not enough historical data yet"
+      >
         Gathering...
       </div>
     );
@@ -21,21 +29,29 @@ export default function Sparkline({ history = [], width = 100, height = 30, isHi
   const maxVal = Math.max(...history);
   const range = maxVal - minVal === 0 ? 1 : maxVal - minVal;
 
-  const points = history.map((val, idx) => {
-    const x = (idx / (history.length - 1)) * width;
-    // Invert y because SVG coordinates start from top-left
-    const y = height - ((val - minVal) / range) * height;
-    return `${x},${y}`;
-  }).join(" ");
+  const points = history
+    .map((val, idx) => {
+      const x = (idx / (history.length - 1)) * width;
+      // Invert y because SVG coordinates start from top-left
+      const y = height - ((val - minVal) / range) * height;
+      return `${x},${y}`;
+    })
+    .join(" ");
 
   // Analyze the trend
-  const startAvg = history.slice(0, Math.max(1, Math.floor(history.length / 3))).reduce((a, b) => a + b, 0) / Math.max(1, Math.floor(history.length / 3));
-  const endAvg = history.slice(-Math.max(1, Math.floor(history.length / 3))).reduce((a, b) => a + b, 0) / Math.max(1, Math.floor(history.length / 3));
-  
+  const startAvg =
+    history
+      .slice(0, Math.max(1, Math.floor(history.length / 3)))
+      .reduce((a, b) => a + b, 0) / Math.max(1, Math.floor(history.length / 3));
+  const endAvg =
+    history
+      .slice(-Math.max(1, Math.floor(history.length / 3)))
+      .reduce((a, b) => a + b, 0) / Math.max(1, Math.floor(history.length / 3));
+
   const diff = endAvg - startAvg;
   let trendWord = "stable";
   let colorClass = isHighContrast ? "stroke-white" : "stroke-teal-500";
-  
+
   if (diff > 0.15) {
     trendWord = "rising";
     colorClass = isHighContrast ? "stroke-yellow-400" : "stroke-rose-500";
@@ -48,11 +64,11 @@ export default function Sparkline({ history = [], width = 100, height = 30, isHi
 
   return (
     <div className="flex flex-col gap-1 shrink-0" title={ariaLabel}>
-      <svg 
-        width={width} 
-        height={height} 
-        className="overflow-visible" 
-        role="img" 
+      <svg
+        width={width}
+        height={height}
+        className="overflow-visible"
+        role="img"
         aria-label={ariaLabel}
       >
         <polyline
@@ -67,13 +83,20 @@ export default function Sparkline({ history = [], width = 100, height = 30, isHi
         {history.length > 0 && (
           <circle
             cx={width}
-            cy={height - ((history[history.length - 1] - minVal) / range) * height}
+            cy={
+              height - ((history[history.length - 1] - minVal) / range) * height
+            }
             r="2"
-            className={trendWord === "rising" ? "fill-rose-500" : "fill-emerald-500"}
+            className={
+              trendWord === "rising" ? "fill-rose-500" : "fill-emerald-500"
+            }
           />
         )}
       </svg>
-      <span className="text-[8px] font-mono font-bold uppercase tracking-wider text-right text-neutral-400" aria-hidden="true">
+      <span
+        className="text-[8px] font-mono font-bold uppercase tracking-wider text-right text-neutral-400"
+        aria-hidden="true"
+      >
         Trend: {trendWord}
       </span>
     </div>

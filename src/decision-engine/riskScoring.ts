@@ -62,15 +62,18 @@ export function getFlowStatus(flowPerMinute: number): FlowStatus {
 export function getZoneRisk(zone: Zone): ZoneRisk {
   const riskLevel = getRiskLevel(zone.currentDensity);
   const flowStatus = getFlowStatus(zone.flowPerMinute);
-  
+
   // Set deterministic default actions before LLM enhances them
   let recommendedAction: string | null = null;
   if (riskLevel === "high" && flowStatus === "congested") {
-    recommendedAction = "CRITICAL: Immediate bottleneck. Divert ingress and open secondary outflow lanes.";
+    recommendedAction =
+      "CRITICAL: Immediate bottleneck. Divert ingress and open secondary outflow lanes.";
   } else if (riskLevel === "high") {
-    recommendedAction = "WARNING: Extreme density. Pause boarding and hold entrance queues.";
+    recommendedAction =
+      "WARNING: Extreme density. Pause boarding and hold entrance queues.";
   } else if (flowStatus === "congested") {
-    recommendedAction = "ATTENTION: Slow flow rate. Redirect mobile signage to clear path obstructions.";
+    recommendedAction =
+      "ATTENTION: Slow flow rate. Redirect mobile signage to clear path obstructions.";
   }
 
   return {
@@ -85,7 +88,7 @@ export function getZoneRisk(zone: Zone): ZoneRisk {
     lng: zone.lng,
     riskLevel,
     flowStatus,
-    recommendedAction
+    recommendedAction,
   };
 }
 
@@ -102,23 +105,26 @@ export function getZoneRisk(zone: Zone): ZoneRisk {
  */
 export function rankZonesForFan(
   zones: Zone[],
-  options: { needsStepFree?: boolean; type?: "gate" | "concourse" | "exit" } = {}
+  options: {
+    needsStepFree?: boolean;
+    type?: "gate" | "concourse" | "exit";
+  } = {},
 ): ZoneRisk[] {
   let processed = zones.map(getZoneRisk);
 
   // Apply filters
   if (options.needsStepFree) {
-    processed = processed.filter(z => z.stepFreeAccess);
+    processed = processed.filter((z) => z.stepFreeAccess);
   }
   if (options.type) {
-    processed = processed.filter(z => z.type === options.type);
+    processed = processed.filter((z) => z.type === options.type);
   }
 
   // Define weight scores for risk levels to help sorting
   const riskWeight = {
     low: 1,
     medium: 2,
-    high: 3
+    high: 3,
   };
 
   // Sort

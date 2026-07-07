@@ -11,8 +11,8 @@ vi.mock("@google/genai", () => {
       this.apiKey = config.apiKey;
       this.models = {
         generateContent: vi.fn().mockResolvedValue({
-          text: "Mocked AI response: Please use Gate A as it is highly accessible and currently has low density levels."
-        })
+          text: "Mocked AI response: Please use Gate A as it is highly accessible and currently has low density levels.",
+        }),
       };
     }
   }
@@ -31,25 +31,60 @@ function detectLanguage(message: string, preferredLanguage?: string): string {
     return preferredLanguage;
   }
   const msgLower = message.toLowerCase();
-  if (msgLower.includes("olá") || msgLower.includes("português") || msgLower.includes("portuguese")) {
+  if (
+    msgLower.includes("olá") ||
+    msgLower.includes("português") ||
+    msgLower.includes("portuguese")
+  ) {
     return "pt";
   }
-  if (msgLower.includes("hola") || msgLower.includes("puerta") || msgLower.includes("entrada") || msgLower.includes("español") || msgLower.includes("spanish")) {
+  if (
+    msgLower.includes("hola") ||
+    msgLower.includes("puerta") ||
+    msgLower.includes("entrada") ||
+    msgLower.includes("español") ||
+    msgLower.includes("spanish")
+  ) {
     return "es";
   }
-  if (msgLower.includes("bonjour") || msgLower.includes("porte") || msgLower.includes("français") || msgLower.includes("french")) {
+  if (
+    msgLower.includes("bonjour") ||
+    msgLower.includes("porte") ||
+    msgLower.includes("français") ||
+    msgLower.includes("french")
+  ) {
     return "fr";
   }
-  if (msgLower.includes("willkommen") || msgLower.includes("tor") || msgLower.includes("deutsch") || msgLower.includes("german")) {
+  if (
+    msgLower.includes("willkommen") ||
+    msgLower.includes("tor") ||
+    msgLower.includes("deutsch") ||
+    msgLower.includes("german")
+  ) {
     return "de";
   }
-  if (msgLower.includes("namaste") || msgLower.includes("swagat") || msgLower.includes("हिन्दी") || msgLower.includes("hindi")) {
+  if (
+    msgLower.includes("namaste") ||
+    msgLower.includes("swagat") ||
+    msgLower.includes("हिन्दी") ||
+    msgLower.includes("hindi")
+  ) {
     return "hi";
   }
-  if (msgLower.includes("marhaban") || msgLower.includes("bawaba") || msgLower.includes("العربية") || msgLower.includes("arabic")) {
+  if (
+    msgLower.includes("marhaban") ||
+    msgLower.includes("bawaba") ||
+    msgLower.includes("العربية") ||
+    msgLower.includes("arabic")
+  ) {
     return "ar";
   }
-  if (msgLower.includes("こんにちは") || msgLower.includes("日本語") || msgLower.includes("japanese") || msgLower.includes("ゲート")) {
+  if (
+    msgLower.includes("こんにちは") ||
+    msgLower.includes("日本語") ||
+    msgLower.includes("japanese") ||
+    msgLower.includes("ゲート")
+  ) {
     return "ja";
   }
   return "en";
@@ -72,7 +107,10 @@ class TokenBucketRateLimiter {
   checkRateLimit(): boolean {
     const now = Date.now();
     const elapsedSeconds = (now - this.lastRefill) / 1000;
-    this.tokens = Math.min(this.capacity, this.tokens + elapsedSeconds * this.refillRate);
+    this.tokens = Math.min(
+      this.capacity,
+      this.tokens + elapsedSeconds * this.refillRate,
+    );
     this.lastRefill = now;
 
     if (this.tokens >= 1) {
@@ -132,7 +170,7 @@ describe("StadiumPulse API Handlers & Middleware Logic", () => {
   describe("Token Bucket Rate Limiting Algorithm", () => {
     it("should consume tokens sequentially and block when exhausted", () => {
       const limiter = new TokenBucketRateLimiter(3, 0); // No refill during test
-      
+
       expect(limiter.checkRateLimit()).toBe(true); // consume token 1
       expect(limiter.checkRateLimit()).toBe(true); // consume token 2
       expect(limiter.checkRateLimit()).toBe(true); // consume token 3
@@ -141,14 +179,14 @@ describe("StadiumPulse API Handlers & Middleware Logic", () => {
 
     it("should refill tokens over elapsed time", async () => {
       const limiter = new TokenBucketRateLimiter(2, 100); // Fast refill: 100 tokens per second
-      
+
       expect(limiter.checkRateLimit()).toBe(true);
       expect(limiter.checkRateLimit()).toBe(true);
       expect(limiter.checkRateLimit()).toBe(false); // blocked
-      
+
       // Wait 15ms
       await new Promise((resolve) => setTimeout(resolve, 15));
-      
+
       expect(limiter.checkRateLimit()).toBe(true); // Refilled!
     });
   });
@@ -157,14 +195,18 @@ describe("StadiumPulse API Handlers & Middleware Logic", () => {
     it("should successfully sanitize harmful script tags using HTML escaping", () => {
       const dirtyString = '<script>alert("hack");</script>';
       const sanitized = escapeHtml(dirtyString);
-      
+
       expect(sanitized).not.toContain("<script>");
-      expect(sanitized).toBe("&lt;script&gt;alert(&quot;hack&quot;);&lt;/script&gt;");
+      expect(sanitized).toBe(
+        "&lt;script&gt;alert(&quot;hack&quot;);&lt;/script&gt;",
+      );
     });
 
     it("should correctly handle ampersands, quotes, and angle brackets", () => {
-      const dirty = "Gate A & Gate B \"Access Only\"";
-      expect(escapeHtml(dirty)).toBe("Gate A &amp; Gate B &quot;Access Only&quot;");
+      const dirty = 'Gate A & Gate B "Access Only"';
+      expect(escapeHtml(dirty)).toBe(
+        "Gate A &amp; Gate B &quot;Access Only&quot;",
+      );
     });
 
     it("should mock validation of message lengths properly", () => {
@@ -173,7 +215,8 @@ describe("StadiumPulse API Handlers & Middleware Logic", () => {
       const tooLongMessage = "a".repeat(501);
 
       const validateInput = (msg: string) => {
-        if (!msg || typeof msg !== "string" || msg.trim().length === 0) return "empty";
+        if (!msg || typeof msg !== "string" || msg.trim().length === 0)
+          return "empty";
         if (msg.length > 500) return "too_long";
         return "valid";
       };
@@ -189,11 +232,13 @@ describe("StadiumPulse API Handlers & Middleware Logic", () => {
       // Setup hypothetical list of zones
       const mockZoneRisks = [
         { zoneId: "gate-a", riskLevel: "low", flowStatus: "normal" },
-        { zoneId: "gate-b", riskLevel: "low", flowStatus: "normal" }
+        { zoneId: "gate-b", riskLevel: "low", flowStatus: "normal" },
       ];
 
       // Logic block mimics server.ts:580
-      const breachingZones = mockZoneRisks.filter(z => z.riskLevel === "high" || z.flowStatus === "congested");
+      const breachingZones = mockZoneRisks.filter(
+        (z) => z.riskLevel === "high" || z.flowStatus === "congested",
+      );
       let calledAI = false;
       let aiRecommendations: string[] = [];
 
@@ -208,24 +253,38 @@ describe("StadiumPulse API Handlers & Middleware Logic", () => {
 
     it("should batch multiple breaching zones into a single grounding context for ONE AI call", () => {
       const mockZoneRisks = [
-        { name: "Gate A", zoneId: "gate-a", riskLevel: "high", flowStatus: "congested", currentDensity: 5.2 },
-        { name: "Concourse North", zoneId: "con-north", riskLevel: "medium", flowStatus: "congested", currentDensity: 4.2 }
+        {
+          name: "Gate A",
+          zoneId: "gate-a",
+          riskLevel: "high",
+          flowStatus: "congested",
+          currentDensity: 5.2,
+        },
+        {
+          name: "Concourse North",
+          zoneId: "con-north",
+          riskLevel: "medium",
+          flowStatus: "congested",
+          currentDensity: 4.2,
+        },
       ];
 
       // Logic block mimics server.ts:576
-      const breachingZones = mockZoneRisks.filter(z => z.riskLevel === "high" || z.flowStatus === "congested");
+      const breachingZones = mockZoneRisks.filter(
+        (z) => z.riskLevel === "high" || z.flowStatus === "congested",
+      );
       let aiCallsCount = 0;
 
       if (breachingZones.length > 0) {
         // Compile all breaching zones into a single prompt string
-        const breachingDetails = breachingZones.map(z => 
-          `- Zone: ${z.name}, Density: ${z.currentDensity} p/m²`
-        ).join("\n");
-        
+        const breachingDetails = breachingZones
+          .map((z) => `- Zone: ${z.name}, Density: ${z.currentDensity} p/m²`)
+          .join("\n");
+
         // Single AI call executed with the batched prompt
         const prompt = `System Instructions...\n${breachingDetails}`;
         aiCallsCount = 1; // single invocation
-        
+
         expect(prompt).toContain("Gate A");
         expect(prompt).toContain("Concourse North");
       }

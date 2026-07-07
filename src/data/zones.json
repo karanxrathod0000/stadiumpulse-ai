@@ -1,0 +1,74 @@
+[
+  {
+    "_meta": "SIMULATED DATA: Standing in for real IoT/vision camera sensors for FIFA World Cup 2026",
+    "id": "gate-a",
+    "name": "Gate A (Northwest Entrance)",
+    "type": "gate",
+    "capacityPerSqm": 5.0,
+    "currentDensity": 1.2,
+    "flowPerMinute": 45,
+    "stepFreeAccess": true,
+    "lat": 40.8142,
+    "lng": -74.0754
+  },
+  {
+    "_meta": "SIMULATED DATA: Standing in for real IoT/vision camera sensors for FIFA World Cup 2026",
+    "id": "gate-b",
+    "name": "Gate B (Northeast Entrance)",
+    "type": "gate",
+    "capacityPerSqm": 5.0,
+    "currentDensity": 4.8,
+    "flowPerMinute": 18,
+    "stepFreeAccess": false,
+    "lat": 40.8145,
+    "lng": -74.0732
+  },
+  {
+    "_meta": "SIMULATED DATA: Standing in for real IoT/vision camera sensors for FIFA World Cup 2026",
+    "id": "gate-c",
+    "name": "Gate C (South Entrance)",
+    "type": "gate",
+    "capacityPerSqm": 5.0,
+    "currentDensity": 2.1,
+    "flowPerMinute": 38,
+    "stepFreeAccess": true,
+    "lat": 40.8123,
+    "lng": -74.0744
+  },
+  {
+    "_meta": "SIMULATED DATA: Standing in for real IoT/vision camera sensors for FIFA World Cup 2026",
+    "id": "concourse-north",
+    "name": "Concourse North (Level 1)",
+    "type": "concourse",
+    "capacityPerSqm": 4.0,
+    "currentDensity": 2.8,
+    "flowPerMinute": 32,
+    "stepFreeAccess": true,
+    "lat": 40.8139,
+    "lng": -74.0748
+  },
+  {
+    "_meta": "SIMULATED DATA: Standing in for real IoT/vision camera sensors for FIFA World Cup 2026",
+    "id": "concourse-south",
+    "name": "Concourse South (Level 1)",
+    "type": "concourse",
+    "capacityPerSqm": 4.0,
+    "currentDensity": 3.9,
+    "flowPerMinute": 22,
+    "stepFreeAccess": true,
+    "lat": 40.8129,
+    "lng": -74.0741
+  },
+  {
+    "_meta": "SIMULATED DATA: Standing in for real IoT/vision camera sensors for FIFA World Cup 2026",
+    "id": "exit-east",
+    "name": "Exit East (Transit Link)",
+    "type": "exit",
+    "capacityPerSqm": 6.0,
+    "currentDensity": 1.5,
+    "flowPerMinute": 55,
+    "stepFreeAccess": false,
+    "lat": 40.8135,
+    "lng": -74.0725
+  }
+]

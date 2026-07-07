@@ -1,0 +1,11 @@
+{
+  "name": "StadiumPulse AI",
+  "description": "Unified safety scoring and conversational navigation copilot for fans and operators at the FIFA World Cup 2026.",
+  "requestFramePermissions": [
+    "geolocation",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
